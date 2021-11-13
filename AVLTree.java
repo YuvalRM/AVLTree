@@ -199,6 +199,94 @@ public class AVLTree {
 	   return -1;
    }
 
+   private boolean left_rotation(IAVLNode parent, IAVLNode child){
+	   if(!( (parent.getLeft() == child) && (child.getParent() == parent)) || (parent == null) || child == null){
+		   return false;
+	   }
+
+
+	   IAVLNode temp = child.getRight();
+	   child.setParent(parent.getParent());
+	   parent.setParent(child);
+	   parent.setLeft(temp);
+	   temp.setParent(parent);
+	   AVLTree.hs_modifier(parent);
+	   AVLTree.hs_modifier(child);
+
+	   if(parent.getParent() != null) {
+		   boolean parent_on_right = parent.getParent().getRight() == parent ? true : false;
+		   if(parent_on_right){
+			   parent.getParent().setRight(child);
+		   }
+		   else{
+			   parent.getParent().setLeft(child);
+		   }
+
+		   AVLTree.hs_modifier(parent);
+	   }
+
+	   return true;
+   }
+
+	private boolean right_rotation(IAVLNode parent, IAVLNode child){
+		if(!( (parent.getRight() == child) && (child.getParent() == parent)) || (parent == null) || child == null){
+			return false;
+		}
+
+
+		IAVLNode temp = child.getLeft();
+		child.setParent(parent.getParent());
+		parent.setParent(child);
+		parent.setRight(temp);
+		temp.setParent(parent);
+		AVLTree.hs_modifier(parent);
+		AVLTree.hs_modifier(child);
+
+		if(parent.getParent() != null) {
+			boolean parent_on_right = parent.getParent().getRight() == parent ? true : false;
+			if(parent_on_right){
+				parent.getParent().setRight(child);
+			}
+			else{
+				parent.getParent().setLeft(child);
+			}
+
+			AVLTree.hs_modifier(parent);
+		}
+
+		return true;
+	}
+
+	private boolean right_left_rotation(IAVLNode parent, IAVLNode child, IAVLNode grand_child){
+	   boolean success = right_rotation(child, grand_child);
+	   if(!success){
+		   return false;
+	   }
+	   if(!left_rotation(parent, grand_child)){
+		   left_rotation(grand_child, child);
+		   return false;
+	   }
+
+	   return true;
+	}
+
+	private boolean left_right_rotation(IAVLNode parent, IAVLNode child, IAVLNode grand_child){
+		boolean success = left_rotation(child, grand_child);
+		if(!success){
+			return false;
+		}
+		if(!right_rotation(parent, grand_child)){
+			right_rotation(grand_child, child);
+			return false;
+		}
+
+		return true;
+	}
+	public static void hs_modifier(IAVLNode node){
+		node.setHeight(Math.max(node.getLeft().getHeight(),node.getRight().getHeight()) + 1);
+		node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
+	}
+
 	/** 
 	 * public interface IAVLNode
 	 * ! Do not delete or modify this - otherwise all tests will fail !
