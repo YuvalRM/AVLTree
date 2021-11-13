@@ -59,7 +59,99 @@ public class AVLTree {
    * Returns -1 if an item with key k already exists in the tree.
    */
    public int insert(int k, String i) {
-	  return 420;	// to be replaced by student code
+	  IAVLNode new_node = new AVLNode(i,k);
+	  if(this.empty()){
+		  this.root = new_node;
+		  return 0;
+	   }
+	  int count_rotations = 0;
+	  IAVLNode node = this.root;
+	  while(node.isRealNode()){
+		  if(node.getKey() == k){
+			  return -1;
+		  }
+		  if(node.getKey() < k ){
+			  if(!node.getRight().isRealNode()){
+				  node.setRight(new_node);
+				  new_node.setParent(node);
+				  break;
+			  }
+			  node = node.getRight();
+		  }
+		  else{
+			  if(!node.getLeft().isRealNode()){
+				  node.setLeft(new_node);
+				  new_node.setParent(node);
+				  break;
+			  }
+			  node = node.getLeft();
+		  }
+	  }
+
+	  IAVLNode node2 = this.root;
+
+	  while(node2.getKey() != k){
+		  node2.setSize(node2.getSize()+1);
+		  if(node2.getKey() < k){
+			  node2 = node.getRight();
+		  }
+		  else{
+			  node2 = node.getLeft();
+		  }
+	  }
+
+	  AVLTree.hs_modifier(node);
+
+	  node = node.getParent();
+
+	  while(node != null){
+		  if(AVLTree.check_ranks(node)){
+			  return count_rotations;
+		  }
+
+		  int h1 = node.getHeight();
+		  int h2 = node.getLeft().getHeight();
+		  int h3 = node.getRight().getHeight();
+
+		  if((h1 == h2 && h1 - h3 == 1) || (h1 == h3) && (h1 - h2 == 1)){
+			  node.setHeight(node.getHeight()+1);
+		  }
+
+		  else{//we assume here that the node is 0-2 or 2-0 and 1-2 or 2-1 in 1 of the grand children
+			  IAVLNode left = node.getLeft();
+			  IAVLNode right = node.getRight();
+
+			  if(h1 == h2){//left
+				  if(left.getHeight() - left.getLeft().getHeight() == 1){
+					  left_rotation(node,left);
+					  count_rotations++;
+				  }
+				  else{
+					  right_left_rotation(node,left,left.getRight());
+					  count_rotations += 2;
+				  }
+			  }
+			  else{//right
+				  if(right.getHeight() - right.getRight().getHeight() == 1){
+					  right_rotation(node,right);
+					  count_rotations++;
+				  }
+				  else{
+					  left_right_rotation(node,right,right.getLeft());
+					  count_rotations += 2;
+				  }
+			  }
+		  }
+	  }
+      return count_rotations;
+   }
+
+   public static boolean check_ranks(IAVLNode node) {
+	   int h1 = node.getHeight();
+	   int h2 = node.getLeft().getHeight();
+	   int h3 = node.getRight().getHeight();
+
+	   return ((h1 - h2 == 1 && (h1 - h3 == 1 || h1 - h3 == 2)) || ((h1 - h3 == 1) && (h1 - h2 == 1 || h1 - h2 == 2)));
    }
 
   /**
@@ -283,8 +375,10 @@ public class AVLTree {
 		return true;
 	}
 	public static void hs_modifier(IAVLNode node){
-		node.setHeight(Math.max(node.getLeft().getHeight(),node.getRight().getHeight()) + 1);
-		node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
+	   if(node.isRealNode()) {
+		   node.setHeight(Math.max(node.getLeft().getHeight(), node.getRight().getHeight()) + 1);
+		   node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
+	   }
 	}
 
 	/** 
