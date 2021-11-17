@@ -39,14 +39,18 @@ public class AVLTree {
    //time complexity: O(log(n))
   public String search(int k)
   {
-	IAVLNode node = this.root;
-	while(node.isRealNode()){
-		if(node.getKey() == k){
-			return node.getValue();
-		}
-		node = node.getKey() < k ? node.getRight() : node.getLeft();
-	}
-	return null;
+	return goTo(k).getValue();
+  }
+
+  private IAVLNode goTo(int k){
+	  IAVLNode node = this.root;
+	  while(node.isRealNode()){
+		  if(node.getKey() == k){
+			  return node;
+		  }
+		  node = node.getKey() < k ? node.getRight() : node.getLeft();
+	  }
+	  return virtual_leaf;
   }
 
   /**
@@ -66,7 +70,7 @@ public class AVLTree {
 	   }
 	  int count_rotations = 0;
 	  IAVLNode node = this.root;
-	  while(node.isRealNode()){
+	  while(node.isRealNode()){//inserting the node
 		  if(node.getKey() == k){
 			  return -1;
 		  }
@@ -88,21 +92,14 @@ public class AVLTree {
 		  }
 	  }
 
-	  IAVLNode node2 = this.root;
+	  IAVLNode node2 = node;
 
-	  while(node2.getKey() != k){
-		  node2.setSize(node2.getSize()+1);
-		  if(node2.getKey() < k){
-			  node2 = node.getRight();
-		  }
-		  else{
-			  node2 = node.getLeft();
-		  }
+	  while(node2 != null){//fix the rank and height of the ancestors
+		  AVLTree.hs_modifier(node2);
+		  node2 = node2.getParent();
 	  }
 
-	  AVLTree.hs_modifier(node);
-
-	  node = node.getParent();
+	  node = node.getParent();//new node's grandfather
 
 	  while(node != null){
 		  if(AVLTree.check_ranks(node)){
@@ -113,11 +110,11 @@ public class AVLTree {
 		  int h2 = node.getLeft().getHeight();
 		  int h3 = node.getRight().getHeight();
 
-		  if((h1 == h2 && h1 - h3 == 1) || (h1 == h3) && (h1 - h2 == 1)){
+		  if((h1 == h2 && h1 - h3 == 1) || (h1 == h3) && (h1 - h2 == 1)){//case 1 from the lecture
 			  node.setHeight(node.getHeight()+1);
 		  }
 
-		  else{//we assume here that the node is 0-2 or 2-0 and 1-2 or 2-1 in 1 of the grand children
+		  else{//cases 2 and 3 from the lecture (with all symmetric cases)
 			  IAVLNode left = node.getLeft();
 			  IAVLNode right = node.getRight();
 
@@ -165,7 +162,90 @@ public class AVLTree {
    */
    public int delete(int k)
    {
-	   return 421;	// to be replaced by student code
+	   int count_rotations = 0;
+	   //performing deletion
+
+	   IAVLNode node = goTo(k);
+
+	   if(!node.isRealNode()){
+		   return -1;
+	   }
+
+	   IAVLNode parent = null;
+	   IAVLNode child = null;
+
+	   if(!node.getRight().isRealNode()){
+		   parent = node.getParent();
+
+		   child = node.getLeft();
+
+	   }
+
+	   else if(!node.getLeft().isRealNode()){
+		   parent = node.getParent();
+
+		   child = node.getRight();
+	   }
+
+	   else{
+		   IAVLNode successor = successor(node);
+		   parent = successor.getParent();
+		   child = successor.getRight();
+		   IAVLNode node_parent = node.getParent();
+		   successor.setLeft(node.getLeft());
+		   successor.setRight(node.getRight());
+		   successor.setHeight(node.getHeight());
+		   successor.setSize(node.getSize());
+		   successor.setParent(node_parent);
+
+		   if(node_parent == null){
+			   this.root = successor;
+		   }
+
+		   else{
+			   if(node_parent.getRight() == node){
+				   node_parent.setRight(successor);
+			   }
+			   else{
+				   node_parent.setLeft(successor);
+			   }
+		   }
+	   }
+
+	   if (parent == null) {
+		   this.root = node.getLeft();
+		   return 0;
+	   }
+
+	   
+
+	   return count_rotations;
+   }
+
+   private IAVLNode successor(IAVLNode node){
+	   if(node.getRight().isRealNode()){
+		   IAVLNode curr = node.getRight();
+		   while(curr.getLeft().isRealNode()){
+			   curr = curr.getLeft();
+		   }
+		   return curr;
+	   }
+
+	   if(node.getParent() != null){
+		   IAVLNode curr = node.getParent();
+		   IAVLNode prev = node;
+		   while(curr.getRight() == prev){
+			   curr = curr.getParent();
+			   prev = prev.getParent();
+			   if(curr == null){
+				   return virtual_leaf;
+			   }
+		   }
+
+		   return curr;
+	   }
+
+	   return virtual_leaf;//we conclude that node is the root, and is the biggest node, therefore has no successor
    }
 
    /**
