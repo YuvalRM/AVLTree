@@ -42,11 +42,15 @@ public class Tests {
 		System.out.println(Arrays.toString(tree.infoToArray()));
 		System.out.println(Arrays.toString(tree2.keysToArray()));
 		System.out.println(Arrays.toString(tree2.infoToArray()));
+		System.out.println("This is Min");
+		System.out.println(tree.min());
 
 		
-		System.out.println(tree.delete(7));
+		System.out.println(tree.delete(1));
 		AVLTree.IAVLNode node2=tree.goTo(7);
 		System.out.println(node2.isRealNode());
+		System.out.println("This is Min");
+		System.out.println(tree.min());
 
 		System.out.println(tree.getRoot().getKey());
 		System.out.println(tree.getRoot().getSize());
@@ -92,24 +96,32 @@ public class Tests {
 		System.out.println(tree.delete(15));	
 		System.out.println(tree.getRoot().getKey());
 		System.out.println(tree.getRoot().getSize());
+		System.out.println("This is Min");
+		System.out.println(tree.min());
 
 		System.out.println(Arrays.toString(tree.keysToArray()));
 		System.out.println(Arrays.toString(tree.infoToArray()));
+		System.out.println("This is Min Tree 2");
+		System.out.println(tree2.min());
 		AVLTree seventeen=new AVLTree();
 		seventeen.insert(17, "no");
 		AVLTree.IAVLNode x=seventeen.goTo(17);
 		tree2.join(x, tree);
+		System.out.println("HOR");
 		System.out.println(Arrays.toString(tree2.keysToArray()));
 		System.out.println(Arrays.toString(tree2.infoToArray()));
 		System.out.println(tree2.getRoot().getKey());
 		System.out.println(x.getLeft().getKey());
 		
-		
 		AVLTree[] trees=tree2.split(17);
+		
 		System.out.println(Arrays.toString(trees[0].keysToArray()));
 		System.out.println(Arrays.toString(trees[0].infoToArray()));
 		System.out.println(Arrays.toString(trees[1].keysToArray()));
 		System.out.println(Arrays.toString(trees[1].infoToArray()));
+		
+		
+		
 		
 		
 	//	AVLTree.IAVLNode x=new AVLNode(17,"ka");
