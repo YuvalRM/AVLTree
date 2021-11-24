@@ -114,9 +114,11 @@ public class Tests {
 		System.out.println(x.getLeft().getKey());
 		
 		AVLTree[] trees=tree2.split(17);
-		
+		System.out.println("the split is finished and these are the results");
+		System.out.println("the smaller tree");
 		System.out.println(Arrays.toString(trees[0].keysToArray()));
 		System.out.println(Arrays.toString(trees[0].infoToArray()));
+		System.out.println("the bigger tree");
 		System.out.println(Arrays.toString(trees[1].keysToArray()));
 		System.out.println(Arrays.toString(trees[1].infoToArray()));
 		

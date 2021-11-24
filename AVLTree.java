@@ -476,7 +476,7 @@ public class AVLTree {
 		return res;
 	}
 
-	public int to_join(IAVLNode x, AVLTree t) {
+	private int to_join(IAVLNode x, AVLTree t) {
 		if (this.empty() && t.empty()) {// if they are both empty x is alone;
 			this.root = x;
 			AVLTree.hs_modifier(x);
