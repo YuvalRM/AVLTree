@@ -145,6 +145,13 @@ public class Tests {
 		AVLTree tra = new AVLTree();
 		tra.insert(17, "no");
 		System.out.println(Arrays.toString(tra.keysToArray()));
+		assertValidAVLTree(tra);
+		tra.insert(2, "1o");
+		assertValidAVLTree(tra);
+		tra.insert(3, "no");
+		assertValidAVLTree(tra);
+		tra.delete(2);
+		assertValidAVLTree(tra);
 		AVLTree[] trees2 = tra.split(17);
 		System.out.println(Arrays.toString(trees2[0].keysToArray()));
 		System.out.println(Arrays.toString(trees2[0].infoToArray()));

@@ -469,6 +469,9 @@ public class AVLTree {
      * Time complexity: O(1)
      */
     public IAVLNode getRoot() {
+    	if(this.empty()) {
+    		return null;
+    	}
         return this.root;
     }
 
