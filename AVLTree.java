@@ -483,14 +483,19 @@ public class AVLTree {
      * Time complexity: O(log(n))
      */
     public AVLTree[] split(int x) {
+        AVLTree[] res = new AVLTree[2];
         AVLTree smaller = new AVLTree();
         AVLTree bigger = new AVLTree();
-
         IAVLNode child = goTo(x);
+
+
         IAVLNode successor = successor(child);
         IAVLNode predecessor = predecessor(child);
         IAVLNode node = child.getParent();
-        boolean right = child == node.getRight();
+        boolean right = false;//random initialization
+        if(node != null) {
+            right = child == node.getRight();
+        }
 
         if (child.getLeft().isRealNode()) {
             child.getLeft().setParent(null);
@@ -540,7 +545,6 @@ public class AVLTree {
             bigger.min = successor;
         }
 
-        AVLTree[] res = new AVLTree[2];
         res[0] = smaller;
         res[1] = bigger;
 
