@@ -130,7 +130,6 @@ public class Tests {
 		System.out.println(Arrays.toString(tree2.keysToArray()));
 		System.out.println(Arrays.toString(tree2.infoToArray()));
 		assertValidAVLTree(tree2);
-		
 
 		AVLTree[] trees = tree2.split(17);
 		System.out.println("the split is finished and these are the results");
@@ -153,7 +152,6 @@ public class Tests {
 		System.out.println(Arrays.toString(trees2[1].infoToArray()));
 		assertValidAVLTree(trees2[0]);
 		assertValidAVLTree(trees2[1]);
-		
 
 		// AVLTree.IAVLNode x=new AVLNode(17,"ka");
 
