@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * AVLTree
@@ -920,6 +923,62 @@ public class AVLTree {
             node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
         }
     }
+    
+    
+    public List<List<String>> printTree(IAVLNode root) {
+        int height = root.getHeight();
+        
+        List<List<String>> result = new ArrayList<List<String>>();
+        for(int i = 0; i <= height; i++){
+            result.add(new ArrayList<String>());
+        }
+        
+        int columnCount = (int)Math.pow(2, height + 1) - 1;
+        printTreeHelper(root, 0, (columnCount - 1) / 2, height, result);
+        
+        for(List<String> list : result){
+            fillHolesWithEmpty(list, (int)Math.pow(2, height + 1) - 1);
+        }
+        
+        return result;
+    }
+    
+    private void printTreeHelper(IAVLNode root, int rowIndex, int columnIndex, int height, List<List<String>> matrix){
+        if(!root.isRealNode()){
+            return;
+        }
+        
+        List<String> currentRow = matrix.get(rowIndex);
+        fillHolesWithEmpty(currentRow, columnIndex);
+        currentRow.add(String.valueOf(root.getKey()));
+        
+        int leftChildColumnIndex = columnIndex - (int)Math.pow(2, height - rowIndex - 1);
+        int rightChildColumnIndex = columnIndex + (int)Math.pow(2, height - rowIndex - 1);
+            
+        printTreeHelper(root.getLeft(), rowIndex + 1, leftChildColumnIndex, height, matrix);
+        printTreeHelper(root.getRight(), rowIndex + 1, rightChildColumnIndex, height, matrix);
+    }
+    
+    private void fillHolesWithEmpty(List<String> list, int targetSize){
+        while(list.size() < targetSize){
+            list.add("");   
+        }
+    }
+    public String toString() {
+    	String ret="";
+    	List<List<String>> toPrint =printTree(this.getRoot());
+    	for(int i=0; i<toPrint.size();i++) {
+    		for(int j=0;j<toPrint.get(i).size();j++) {
+    			ret+=toPrint.get(i).get(j);
+    			if(toPrint.get(i).get(j).equals("")) {
+    				ret+="!-";
+    			}
+    		}
+    		ret+="\n";
+    	}
+    	return ret;
+    }
+    
 
     /**
      * public interface IAVLNode ! Do not delete or modify this - otherwise all
