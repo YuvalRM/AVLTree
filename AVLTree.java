@@ -421,60 +421,99 @@ public class AVLTree {
 	 * not empty) postcondition: none
 	 */
 	public AVLTree[] split(int x) {
-		AVLTree smaller = new AVLTree();
-		AVLTree bigger = new AVLTree();
+        AVLTree smaller = new AVLTree();
+        AVLTree bigger = new AVLTree();
 
-		IAVLNode child = goTo(x);
-		IAVLNode successor = successor(child);
-		IAVLNode predecessor = predecessor(child);
+        IAVLNode child = goTo(x);
+        IAVLNode successor = successor(child);
+        IAVLNode predecessor = predecessor(child);
+        IAVLNode node = child.getParent();
+        boolean right = child == node.getRight();
 
-		if (child.getLeft().isRealNode()) {
-			smaller.root = child.getLeft();
-		}
-		if (child.getRight().isRealNode()) {
-			bigger.root = child.getRight();
-		}
+        if (child.getLeft().isRealNode()) {
+            child.getLeft().setParent(null);
+            smaller.root = child.getLeft();
+        }
 
-		IAVLNode parent = child.getParent();
+        if (child.getRight().isRealNode()) {
+            child.getRight().setParent(null);
+            bigger.root = child.getRight();
+        }
 
-		while (parent != null) {
-			if (child == parent.getRight()) {
-				smaller.to_join(parent, getTree(parent.getLeft()));
-				smaller.root = parent;
-			}
+        complete_disconnect(child);
 
-			else {// child == parent.getLeft()
-				bigger.to_join(parent, getTree(parent.getRight()));
-				bigger.root = parent;
-			}
+        while (node != null) {
+            IAVLNode temp_node = node.getParent();
 
-			child = parent;
-			parent = parent.getParent();
-		}
+            if (right) {
+                right = update_side(node);
+                IAVLNode left_son = node.getLeft();
+                disconnect_from_parent(left_son);
+                AVLTree temp_tree = new AVLTree ();
+                temp_tree.root=left_son;
+                complete_disconnect(node);
+                smaller.to_join(node, temp_tree);
+            }
 
-		if (!smaller.empty()) {
-			smaller.min = this.min;
-			smaller.max = predecessor;
-		}
+            else {// child == parent.getLeft()
+                right = update_side(node);
+                IAVLNode right_son = node.getRight();
+                disconnect_from_parent(right_son);
+                AVLTree temp_tree = new AVLTree ();
+                temp_tree.root=right_son;
+                complete_disconnect(node);
+                bigger.to_join(node, temp_tree);
+            }
 
-		if (!bigger.empty()) {
-			bigger.max = this.max;
-			smaller.min = successor;
-		}
+            node = temp_node;
+        }
 
-		AVLTree[] res = new AVLTree[2];
-		res[0] = smaller;
-		res[1] = bigger;
+        if (!smaller.empty()) {
+            smaller.min = this.min;
+            smaller.max = predecessor;
+        }
 
-		return res;
+        if (!bigger.empty()) {
+            bigger.max = this.max;
+            smaller.min = successor;
+        }
 
-	}
+        AVLTree[] res = new AVLTree[2];
+        res[0] = smaller;
+        res[1] = bigger;
 
-	private AVLTree getTree(IAVLNode node) {
-		AVLTree res = new AVLTree();
-		res.insert(node.getKey(), node.getValue());
-		return res;
-	}
+        return res;
+
+    }
+
+    private boolean update_side(IAVLNode node){
+        if(node.getParent() != null){
+            return node == node.getParent().getRight();
+        }
+        return false;
+    }
+
+
+    private void disconnect_from_parent(IAVLNode node){
+        IAVLNode parent = node.getParent();
+
+        if(node.getParent() != null) {
+            if (parent.getLeft() == node) {
+                parent.setLeft(virtual_leaf);
+            } else {
+                parent.setRight(virtual_leaf);
+            }
+        }
+        node.setParent(null);
+    }
+
+    private void complete_disconnect(IAVLNode node){
+        disconnect_from_parent(node);
+        node.setLeft(virtual_leaf);
+        node.setRight(virtual_leaf);
+        node.setHeight(0);
+        node.setSize(1);
+    }
 
 	private int to_join(IAVLNode x, AVLTree t) {
 		if (this.empty() && t.empty()) {// if they are both empty x is alone;

@@ -106,12 +106,16 @@ public class Tests {
 		AVLTree seventeen=new AVLTree();
 		seventeen.insert(17, "no");
 		AVLTree.IAVLNode x=seventeen.goTo(17);
+		System.out.println("before join t1");
+		System.out.println(Arrays.toString(tree.keysToArray()));
+		System.out.println(Arrays.toString(tree.infoToArray()));
+		System.out.println("before join t2");
+		System.out.println(Arrays.toString(tree2.keysToArray()));
+		System.out.println(Arrays.toString(tree2.infoToArray()));
 		tree2.join(x, tree);
 		System.out.println("HOR");
 		System.out.println(Arrays.toString(tree2.keysToArray()));
 		System.out.println(Arrays.toString(tree2.infoToArray()));
-		System.out.println(tree2.getRoot().getKey());
-		System.out.println(x.getLeft().getKey());
 		
 		AVLTree[] trees=tree2.split(17);
 		System.out.println("the split is finished and these are the results");
