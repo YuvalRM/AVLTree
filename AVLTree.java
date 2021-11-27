@@ -428,7 +428,10 @@ public class AVLTree {
         IAVLNode successor = successor(child);
         IAVLNode predecessor = predecessor(child);
         IAVLNode node = child.getParent();
-        boolean right = child == node.getRight();
+        boolean right=false;
+        if(node!=null) {
+        	right = child == node.getRight();
+        }
 
         if (child.getLeft().isRealNode()) {
             child.getLeft().setParent(null);
@@ -475,7 +478,7 @@ public class AVLTree {
 
         if (!bigger.empty()) {
             bigger.max = this.max;
-            smaller.min = successor;
+            bigger.min = successor;
         }
 
         AVLTree[] res = new AVLTree[2];
