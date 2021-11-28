@@ -884,6 +884,7 @@ public class AVLTree {
 			node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
 		}
 	}
+	//this is printer
 
 	public List<List<String>> printTree(IAVLNode root) {
 		int height = root.getHeight();
@@ -951,6 +952,10 @@ public class AVLTree {
 			ret += "\n";
 		}
 		return ret;
+	}
+	
+	public IAVLNode getMax() {
+		return this.max;
 	}
 
 	/**
