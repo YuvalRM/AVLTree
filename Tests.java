@@ -9,162 +9,125 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Tests {
+
+	private static final String tooLargeMassage = "Too Big";
+
 	public static void main(String[] arg) {
-		AVLTree tree = new AVLTree();
-		AVLTree tree2 = new AVLTree();
-		tree.insert(3, "3");
-		tree.insert(1, "1");
-		tree.insert(7, "7");
-		tree.insert(6, "6");
-		tree.insert(2, "2");
-		tree.insert(15, "15");
-		tree.insert(10, "!!!");
-		tree.insert(10, "26");
-		tree2.insert(21, "3");
-		tree2.insert(52, "1");
-		tree2.insert(31, "7");
-		tree2.insert(718, "6");
-		tree2.insert(100, "2");
-		tree2.insert(81, "15");
-		tree2.insert(42, "!!!");
-		tree2.insert(73, "26");
-		tree2.insert(91, "7");
-		tree2.insert(728, "6");
-		tree2.insert(103, "2");
-		tree2.insert(81, "15");
-		tree2.insert(421, "!!!");
-		tree2.insert(714, "26");
-		tree2.insert(301, "7");
-		tree2.insert(715, "6");
-		tree2.insert(150, "2");
-		tree2.insert(411, "15");
-		tree2.insert(442, "!!!");
-		tree2.insert(713, "26");
-		tree2.insert(391, "7");
-		tree2.insert(738, "6");
-		tree2.insert(109, "2");
-		tree2.insert(834, "15");
-		tree2.insert(432, "!!!");
-		tree2.insert(61, "26");
-		System.out.println(Arrays.toString(tree.keysToArray()));
-		System.out.println(Arrays.toString(tree.infoToArray()));
-		System.out.println(Arrays.toString(tree2.keysToArray()));
-		System.out.println(Arrays.toString(tree2.infoToArray()));
-		System.out.println("This is Min");
-		System.out.println(tree.min());
-
-		System.out.println(tree.delete(1));
-		AVLTree.IAVLNode node2 = tree.goTo(7);
-		System.out.println(node2.isRealNode());
-		System.out.println("This is Min");
-		System.out.println(tree.min());
-
-		System.out.println(tree.getRoot().getKey());
-		System.out.println(tree.getRoot().getSize());
-
-		System.out.println(Arrays.toString(tree.keysToArray()));
-		System.out.println(Arrays.toString(tree.infoToArray()));
-
-		System.out.println(tree.delete(3));
-		System.out.println(tree.getRoot().getKey());
-		System.out.println(tree.getRoot().getSize());
-
-		System.out.println(Arrays.toString(tree.keysToArray()));
-		System.out.println(Arrays.toString(tree.infoToArray()));
-
-		System.out.println(tree.delete(1));
-		System.out.println(tree.getRoot().getKey());
-		System.out.println(tree.getRoot().getSize());
-
-		System.out.println(Arrays.toString(tree.keysToArray()));
-		System.out.println(Arrays.toString(tree.infoToArray()));
-
-		System.out.println(tree.delete(1));
-		System.out.println(tree.getRoot().getKey());
-		System.out.println(tree.getRoot().getSize());
-
-		System.out.println(Arrays.toString(tree.keysToArray()));
-		System.out.println(Arrays.toString(tree.infoToArray()));
-
-		System.out.println(tree.delete(6));
-		System.out.println(tree.getRoot().getKey());
-		System.out.println(tree.getRoot().getSize());
-
-		System.out.println(Arrays.toString(tree.keysToArray()));
-		System.out.println(Arrays.toString(tree.infoToArray()));
-
-		System.out.println(tree.insert(4, "wow"));
-		System.out.println(tree.getRoot().getKey());
-		System.out.println(tree.getRoot().getSize());
-
-		System.out.println(Arrays.toString(tree.keysToArray()));
-		System.out.println(Arrays.toString(tree.infoToArray()));
-
-		System.out.println(tree.delete(15));
-		System.out.println(tree.getRoot().getKey());
-		System.out.println(tree.getRoot().getSize());
-		System.out.println("This is Min");
-		System.out.println(tree.min());
-
-		System.out.println(Arrays.toString(tree.keysToArray()));
-		System.out.println(Arrays.toString(tree.infoToArray()));
-		System.out.println("This is Min Tree 2");
-		System.out.println(tree2.min());
-		AVLTree seventeen = new AVLTree();
-		seventeen.insert(17, "no");
-		AVLTree.IAVLNode x = seventeen.goTo(17);
-		System.out.println("before join t1");
-		System.out.println(Arrays.toString(tree.keysToArray()));
-		System.out.println(Arrays.toString(tree.infoToArray()));
-		System.out.println("before join t2");
-		System.out.println(Arrays.toString(tree2.keysToArray()));
-		System.out.println(Arrays.toString(tree2.infoToArray()));
-		assertValidAVLTree(tree2);
-		assertValidAVLTree(tree);
-		tree2.join(x, tree);
-		System.out.println("HOR");
-		System.out.println(Arrays.toString(tree2.keysToArray()));
-		System.out.println(Arrays.toString(tree2.infoToArray()));
-		System.out.println(tree2);
-		assertValidAVLTree(tree2);
-
-		AVLTree[] trees = tree2.split(17);
-		System.out.println("the split is finished and these are the results");
-		System.out.println("the smaller tree");
-		System.out.println(Arrays.toString(trees[0].keysToArray()));
-		System.out.println(Arrays.toString(trees[0].infoToArray()));
-		System.out.println("the bigger tree");
-		System.out.println(Arrays.toString(trees[1].keysToArray()));
-		System.out.println(Arrays.toString(trees[1].infoToArray()));
-		assertValidAVLTree(trees[0]);
-		assertValidAVLTree(trees[1]);
-		System.out.println("finished");
-		AVLTree tra = new AVLTree();
-		tra.insert(17, "no");
-		System.out.println(Arrays.toString(tra.keysToArray()));
-		assertValidAVLTree(tra);
-		tra.insert(2, "1o");
-		assertValidAVLTree(tra);
-		tra.insert(3, "no");
-		assertValidAVLTree(tra);
-		tra.delete(2);
-		assertValidAVLTree(tra);
-		AVLTree[] trees2 = tra.split(17);
-		System.out.println(Arrays.toString(trees2[0].keysToArray()));
-		System.out.println(Arrays.toString(trees2[0].infoToArray()));
-		System.out.println(Arrays.toString(trees2[1].keysToArray()));
-		System.out.println(Arrays.toString(trees2[1].infoToArray()));
-		assertValidAVLTree(trees2[0]);
-		assertValidAVLTree(trees2[1]);
-		trees2[0].delete(3);
-		System.out.println(Arrays.toString(trees2[0].keysToArray()));
-		assertValidAVLTree(trees2[0]);
-
-		// AVLTree.IAVLNode x=new AVLNode(17,"ka");
+		/*
+		 * AVLTree tree = new AVLTree(); AVLTree tree2 = new AVLTree(); tree.insert(3,
+		 * "3"); tree.insert(1, "1"); tree.insert(7, "7"); tree.insert(6, "6");
+		 * tree.insert(2, "2"); tree.insert(15, "15"); tree.insert(10, "!!!");
+		 * tree.insert(10, "26"); tree2.insert(21, "3"); tree2.insert(52, "1");
+		 * tree2.insert(31, "7"); tree2.insert(718, "6"); tree2.insert(100, "2");
+		 * tree2.insert(81, "15"); tree2.insert(42, "!!!"); tree2.insert(73, "26");
+		 * tree2.insert(91, "7"); tree2.insert(728, "6"); tree2.insert(103, "2");
+		 * tree2.insert(81, "15"); tree2.insert(421, "!!!"); tree2.insert(714, "26");
+		 * tree2.insert(301, "7"); tree2.insert(715, "6"); tree2.insert(150, "2");
+		 * tree2.insert(411, "15"); tree2.insert(442, "!!!"); tree2.insert(713, "26");
+		 * tree2.insert(391, "7"); tree2.insert(738, "6"); tree2.insert(109, "2");
+		 * tree2.insert(834, "15"); tree2.insert(432, "!!!"); tree2.insert(61, "26");
+		 * System.out.println(Arrays.toString(tree.keysToArray()));
+		 * System.out.println(Arrays.toString(tree.infoToArray()));
+		 * System.out.println(Arrays.toString(tree2.keysToArray()));
+		 * System.out.println(Arrays.toString(tree2.infoToArray()));
+		 * System.out.println("This is Min"); System.out.println(tree.min());
+		 * 
+		 * System.out.println(tree.delete(1)); AVLTree.IAVLNode node2 = tree.goTo(7);
+		 * System.out.println(node2.isRealNode()); System.out.println("This is Min");
+		 * System.out.println(tree.min());
+		 * 
+		 * System.out.println(tree.getRoot().getKey());
+		 * System.out.println(tree.getRoot().getSize());
+		 * 
+		 * System.out.println(Arrays.toString(tree.keysToArray()));
+		 * System.out.println(Arrays.toString(tree.infoToArray()));
+		 * 
+		 * System.out.println(tree.delete(3));
+		 * System.out.println(tree.getRoot().getKey());
+		 * System.out.println(tree.getRoot().getSize());
+		 * 
+		 * System.out.println(Arrays.toString(tree.keysToArray()));
+		 * System.out.println(Arrays.toString(tree.infoToArray()));
+		 * 
+		 * System.out.println(tree.delete(1));
+		 * System.out.println(tree.getRoot().getKey());
+		 * System.out.println(tree.getRoot().getSize());
+		 * 
+		 * System.out.println(Arrays.toString(tree.keysToArray()));
+		 * System.out.println(Arrays.toString(tree.infoToArray()));
+		 * 
+		 * System.out.println(tree.delete(1));
+		 * System.out.println(tree.getRoot().getKey());
+		 * System.out.println(tree.getRoot().getSize());
+		 * 
+		 * System.out.println(Arrays.toString(tree.keysToArray()));
+		 * System.out.println(Arrays.toString(tree.infoToArray()));
+		 * 
+		 * System.out.println(tree.delete(6));
+		 * System.out.println(tree.getRoot().getKey());
+		 * System.out.println(tree.getRoot().getSize());
+		 * 
+		 * System.out.println(Arrays.toString(tree.keysToArray()));
+		 * System.out.println(Arrays.toString(tree.infoToArray()));
+		 * 
+		 * System.out.println(tree.insert(4, "wow"));
+		 * System.out.println(tree.getRoot().getKey());
+		 * System.out.println(tree.getRoot().getSize());
+		 * 
+		 * System.out.println(Arrays.toString(tree.keysToArray()));
+		 * System.out.println(Arrays.toString(tree.infoToArray()));
+		 * 
+		 * System.out.println(tree.delete(15));
+		 * System.out.println(tree.getRoot().getKey());
+		 * System.out.println(tree.getRoot().getSize());
+		 * System.out.println("This is Min"); System.out.println(tree.min());
+		 * 
+		 * System.out.println(Arrays.toString(tree.keysToArray()));
+		 * System.out.println(Arrays.toString(tree.infoToArray()));
+		 * System.out.println("This is Min Tree 2"); System.out.println(tree2.min());
+		 * AVLTree seventeen = new AVLTree(); seventeen.insert(17, "no");
+		 * AVLTree.IAVLNode x = seventeen.goTo(17);
+		 * System.out.println("before join t1");
+		 * System.out.println(Arrays.toString(tree.keysToArray()));
+		 * System.out.println(Arrays.toString(tree.infoToArray()));
+		 * System.out.println("before join t2");
+		 * System.out.println(Arrays.toString(tree2.keysToArray()));
+		 * System.out.println(Arrays.toString(tree2.infoToArray()));
+		 * assertValidAVLTree(tree2); assertValidAVLTree(tree); tree2.join(x, tree);
+		 * System.out.println("HOR");
+		 * System.out.println(Arrays.toString(tree2.keysToArray()));
+		 * System.out.println(Arrays.toString(tree2.infoToArray()));
+		 * System.out.println(tree2); assertValidAVLTree(tree2);
+		 * 
+		 * AVLTree[] trees = tree2.split(17);
+		 * System.out.println("the split is finished and these are the results");
+		 * System.out.println("the smaller tree");
+		 * System.out.println(Arrays.toString(trees[0].keysToArray()));
+		 * System.out.println(Arrays.toString(trees[0].infoToArray()));
+		 * System.out.println("the bigger tree");
+		 * System.out.println(Arrays.toString(trees[1].keysToArray()));
+		 * System.out.println(Arrays.toString(trees[1].infoToArray()));
+		 * assertValidAVLTree(trees[0]); assertValidAVLTree(trees[1]);
+		 * System.out.println("finished"); AVLTree tra = new AVLTree(); tra.insert(17,
+		 * "no"); System.out.println(Arrays.toString(tra.keysToArray()));
+		 * assertValidAVLTree(tra); tra.insert(2, "1o"); assertValidAVLTree(tra);
+		 * tra.insert(3, "no"); assertValidAVLTree(tra); tra.delete(2);
+		 * assertValidAVLTree(tra); AVLTree[] trees2 = tra.split(17);
+		 * System.out.println(Arrays.toString(trees2[0].keysToArray()));
+		 * System.out.println(Arrays.toString(trees2[0].infoToArray()));
+		 * System.out.println(Arrays.toString(trees2[1].keysToArray()));
+		 * System.out.println(Arrays.toString(trees2[1].infoToArray()));
+		 * assertValidAVLTree(trees2[0]); assertValidAVLTree(trees2[1]);
+		 * trees2[0].delete(3);
+		 * System.out.println(Arrays.toString(trees2[0].keysToArray()));
+		 * assertValidAVLTree(trees2[0]);
+		 */
+		stressTest();
 
 	}
 
@@ -180,14 +143,21 @@ public class Tests {
 
 		assertTrue(keys.length == values.length);
 
-		if (!empty) {
-			assertEquals(min, values[0]);
-			assertEquals(max, values[values.length - 1]);
-		}
-
 		/* Assert sorted */
 		for (int i = 1; i < keys.length; ++i) {
+			if(!(keys[i - 1] < keys[i])) {
+				System.out.println(Arrays.toString(keys));
+				System.out.println((keys[i - 1]));
+				System.out.println((keys[i]));
+			}
 			assertTrue(keys[i - 1] < keys[i]);
+		}
+
+		if (!empty) {
+			if(!min.equals(values[0])||(!max.equals(values[values.length-1]))) {
+			System.out.println(Arrays.toString(keys));}
+			assertEquals(min, values[0]);
+			assertEquals(max, values[values.length - 1]);
 		}
 
 		/* <Key : Pair(Value, isChecked)> dictionary */
@@ -265,10 +235,120 @@ public class Tests {
 		}
 
 		// Assert size() returns the actual amount of nodes in the tree
-		assertSame(size, count);
+		assertEquals(size, count);
 
 		// Assert every key actually exists in the key
 		data.forEach(
 				(key, pair) -> assertTrue(pair.b, String.format("Node with the following key is missing: %d", key)));
+	}
+
+	public static void stressTest() {
+		Random rand = new Random();
+		AVLTree tree = new AVLTree();
+		AVLTree tree2 = new AVLTree();
+		while (true) {
+			try {
+
+				for (int i = 0; i < 10000; i++) {
+					boolean insertOrDel = rand.nextBoolean();
+					int val = rand.nextInt(1000);
+					if (insertOrDel) {
+						tree.insert(val, String.valueOf(val));
+					} else {
+						tree.delete(val);
+					}
+
+				}
+				assertValidAVLTree(tree);
+				int howMany = rand.nextInt(15);
+				for (int i = 0; i < howMany; i++) {
+					tree2 = new AVLTree();
+					boolean join = true;
+					if (join) {
+						boolean larger = rand.nextBoolean();
+						if (larger) {
+							int max = 0;
+							if (!(tree.max() == null)) {
+								max = tree.keysToArray()[tree.size() - 1];
+							}
+							if (max > 100000) {
+								throw new Exception(tooLargeMassage);
+							}
+							AVLTree connectTree = new AVLTree();
+							connectTree.insert(max + 100, String.valueOf(max + 100));
+							AVLTree.IAVLNode connect = connectTree.getRoot();
+							for (int j = 0; j < 1000; j++) {
+								boolean insertOrDel = rand.nextBoolean();
+								int val = rand.nextInt(1000) + max + 200;
+								assert (val > max);
+								if (insertOrDel) {
+									tree2.insert(val, String.valueOf(val));
+								} else {
+									tree2.delete(val);
+								}
+							}
+							assertValidAVLTree(tree2);
+							assertValidAVLTree(tree);
+							tree.join(connect, tree2);
+							assertValidAVLTree(tree);
+						} else {
+							int min = 0;
+							if (!(tree.min() == null)) {
+								min = tree.keysToArray()[0];
+								if (min <= 1) {
+									continue;// not interesting the smaller tree cannot hold keys smaller then 0;
+								}
+							}
+							else {
+								min=10;
+							}
+							AVLTree connectTree = new AVLTree();
+							connectTree.insert(min - 1, String.valueOf(min - 1));
+							AVLTree.IAVLNode connect = connectTree.getRoot();
+							for (int j = 0; j < 10000; j++) {
+								boolean insertOrDel = rand.nextBoolean();
+								int val = rand.nextInt(min - 1);
+								assert(val<min-1);
+								if (insertOrDel) {
+									tree2.insert(val, String.valueOf(val));
+								} else {
+									tree2.delete(val);
+								}
+							}
+							assertValidAVLTree(tree2);
+							assertValidAVLTree(tree);
+							tree.join(connect, tree2);
+							assertValidAVLTree(tree);
+
+						}
+					} else {
+
+						int[] keys = tree.keysToArray();
+						int splitKey = rand.nextInt(keys.length);
+						int theKey = keys[splitKey];
+						AVLTree[] trees = tree.split(theKey);
+						assertValidAVLTree(trees[1]);
+						assertValidAVLTree(trees[0]);
+						boolean larger = rand.nextBoolean();
+						if (larger) {
+							tree = trees[1];
+						} else {
+							tree = trees[0];
+						}
+					}
+				}
+			} catch (Exception e) {
+				System.out.println("error occured");
+				System.out.println(e.toString());
+
+				System.out.println("resetting");
+				tree = new AVLTree();
+
+			} /*catch (AssertionError e) {
+				System.out.println(e.toString());
+				System.out.println("resetting");
+				tree = new AVLTree();
+			}*/
+		}
 	}
 }

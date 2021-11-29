@@ -146,10 +146,10 @@ public class AVLTree {
 			return -1;
 		}
 		if (this.root.getSize() == 1) {
-			this.max = virtual_leaf;
-			this.min = virtual_leaf;
+			this.max = null;
+			this.min = null;
 			this.root = virtual_leaf;
-			return 0;
+			return 1;
 
 		} else {// O(log(n))
 			if (this.max.getKey() == k) {
@@ -182,6 +182,7 @@ public class AVLTree {
 
 			parent = successor.getParent();
 			child = successor.getRight();
+			assert (!successor.getLeft().isRealNode());
 			IAVLNode node_parent = node.getParent();
 			successor.setLeft(node.getLeft());
 			successor.setRight(node.getRight());
@@ -207,14 +208,15 @@ public class AVLTree {
 			child.setParent(parent);
 		} else {
 			left_rotation(node, successor);
+			assert (!node.getRight().isRealNode());
 			parent = successor;
 
 			child = node.getLeft();
 		}
 
 		if (parent == null) {
-			this.root = node.getLeft();
-			return 0;
+			this.root = child;
+			return 1;
 		}
 		if (flag) {
 			if (parent.getRight() == node) {
@@ -226,7 +228,7 @@ public class AVLTree {
 		}
 
 		// fixing all the nodes up the tree just by current height and size
-
+		AVLTree.hs_modifier(parent);
 		node = parent;
 
 		while (node != null) {// fix the rank and height of the ancestors
@@ -236,50 +238,67 @@ public class AVLTree {
 			int nh = node.getHeight();// rank of our node
 			int lh = left.getHeight();// rank of left node
 			int rh = right.getHeight();// rank of right node
-			if (node != null) {// if the rank is correct we only need to fix the size;
+			// if the rank is correct we only need to fix the size;
+			if (!check_ranks(node)) {
 				if (nh - lh == 2 && nh - rh == 2) {// case 1
 					AVLTree.hs_modifier(node);// fixing the rank
 					count_mod++;
 				} else {
-					assert (nh - lh == 3 || nh - rh == 3);
-					assert (!(nh - lh == 3 && nh - rh == 3));
 
-					if (nh - lh == 3) {// the problem is in the left subtree
+					assert (!(nh - lh == 3 && nh - rh == 3));
+					assert ((nh - lh == 3 && nh - rh == 1) || (nh - lh == 1 && nh - rh == 3));
+					if (nh - lh == 3) {// the problem is in the right subtree
 						int rrh = right.getRight().getHeight();// the height of the right node of the right node
 						int lrh = right.getLeft().getHeight();// the height of the left node of the right node
 						assert (!(rh - rrh == 2 && rh - lrh == 2));
 						if (rh - rrh == 1 && rh - lrh == 1) {// case 2
 							left_rotation(node, right);
+							AVLTree.hs_modifier(node);
+							AVLTree.hs_modifier(right);
 							count_mod += 3;
 						} else if (rh - rrh == 1 && rh - lrh == 2) {// case 3
 							left_rotation(node, right);
+							AVLTree.hs_modifier(node);
+							AVLTree.hs_modifier(right);
 							count_mod += 3;
 						} else {
 							assert (rh - rrh == 2 && rh - lrh == 1);// case 4
+							IAVLNode rightL = right.getLeft();
 							right_left_rotation(node, right, right.getLeft());
+							AVLTree.hs_modifier(node);
+							AVLTree.hs_modifier(right);
+							AVLTree.hs_modifier(rightL);
 							count_mod += 6;
 
 						}
-					} else if (nh - lh == 3) {// the problem is in the left subtree
+					} else if (nh - rh == 3) {// the problem is in the left subtree
 						int rlh = left.getRight().getHeight();// the height of the right node of the right node
 						int llh = left.getLeft().getHeight();// the height of the left node of the right node
 						assert (!(lh - rlh == 2 && lh - llh == 2));
 						if (lh - rlh == 1 && lh - llh == 1) {// case 2
 							right_rotation(node, left);
+							AVLTree.hs_modifier(node);
+							AVLTree.hs_modifier(left);
 							count_mod += 3;
 						} else if (lh - rlh == 2 && lh - llh == 1) {
 							right_rotation(node, left);
+							AVLTree.hs_modifier(node);
+							AVLTree.hs_modifier(left);
 							count_mod += 3;
 						} else {
 							assert (lh - rlh == 1 && lh - llh == 2);
-							right_left_rotation(node, left, left.getRight());
+							IAVLNode leftR = left.getRight();
+							left_right_rotation(node, left, left.getRight());
+							AVLTree.hs_modifier(node);
+							AVLTree.hs_modifier(left);
+							AVLTree.hs_modifier(leftR);
 							count_mod += 6;
 
 						}
 					}
 				}
-
 			}
+
 			AVLTree.hs_modifier(node);// we need to fix the size but it will not be height modifier so no addition
 			// to count_mod
 			node = node.getParent();
@@ -598,14 +617,16 @@ public class AVLTree {
 			AVLTree.hs_modifier(x);
 			return 0;
 		}
-		int k = Math.min(this.root.getHeight(), t.root.getHeight());// k == the smaller tree's rank
+		// k == the smaller tree's rank
 		AVLTree higher_tree = this.root.getHeight() < t.root.getHeight() ? t : this;
 		AVLTree shorter_tree = this.root.getHeight() < t.root.getHeight() ? this : t;
+		int k = shorter_tree.root.getHeight();
 		int res = higher_tree.root.getHeight() - k + 1;
 		if (higher_tree.root.getKey() > x.getKey()) {
+
 			IAVLNode nodeH = higher_tree.root;
 			IAVLNode nodeS = shorter_tree.root;
-			if (res == 1) {
+			if (res == 1 || res == 2) {
 				x.setLeft(nodeS);
 				x.setRight(nodeH);
 				nodeH.setParent(x);
@@ -616,10 +637,13 @@ public class AVLTree {
 				return res;
 			}
 			this.root = nodeH;
+			IAVLNode parent = null;
 			while (nodeH.isRealNode() && nodeH.getHeight() > k) {
+
+				parent = nodeH;
 				nodeH = nodeH.getLeft();
 			}
-			IAVLNode parent = nodeH.getParent();
+			assert (nodeS.getHeight() - nodeH.getHeight() == 1 || nodeS.getHeight() - nodeH.getHeight() == 0);
 			x.setRight(nodeH);
 			x.setLeft(nodeS);
 			nodeS.setParent(x);
@@ -627,11 +651,10 @@ public class AVLTree {
 			parent.setLeft(x);
 			x.setParent(parent);
 
-		}
-		if (higher_tree.root.getKey() < x.getKey()) {
+		} else if (higher_tree.root.getKey() < x.getKey()) {
 			IAVLNode nodeH = higher_tree.root;
 			IAVLNode nodeS = shorter_tree.root;
-			if (res == 1) {
+			if (res == 1 || res == 2) {
 				x.setLeft(nodeH);
 				x.setRight(nodeS);
 				nodeH.setParent(x);
@@ -642,10 +665,12 @@ public class AVLTree {
 				return res;
 			}
 			this.root = nodeH;
+			IAVLNode parent=null;
 			while (nodeH.isRealNode() && nodeH.getHeight() > k) {
+				parent = nodeH;
 				nodeH = nodeH.getRight();
 			}
-			IAVLNode parent = nodeH.getParent();
+			assert (nodeH.getHeight() - nodeS.getHeight() == -1 || nodeH.getHeight() - nodeS.getHeight() == 0);
 			x.setRight(nodeS);
 			x.setLeft(nodeH);
 			nodeS.setParent(x);
@@ -673,8 +698,10 @@ public class AVLTree {
 	public int join(IAVLNode x, AVLTree t) {
 		// we assume this is a valid tree
 		if (t.max == null && this.max == null) {
+			this.root = x;
 			this.max = x;
 			this.min = x;
+			return 0;
 		} else if (this.max == null) {
 
 			this.max = t.max.getKey() > x.getKey() ? t.max : x;
@@ -721,7 +748,7 @@ public class AVLTree {
 							right_rotation(node, left);
 							count_mod += 2;
 						}
-						if (lh - left.getLeft().getHeight() == 1) {
+						else if (lh - left.getLeft().getHeight() == 1) {
 							right_rotation(node, left);
 							count_mod += 2;
 						} else {
@@ -733,7 +760,7 @@ public class AVLTree {
 							left_rotation(node, right);
 							count_mod += 2;
 						}
-						if (rh - right.getRight().getHeight() == 1) {
+						else if (rh - right.getRight().getHeight() == 1) {
 							left_rotation(node, right);
 							count_mod += 2;
 						} else {
@@ -745,7 +772,7 @@ public class AVLTree {
 
 			}
 			AVLTree.hs_modifier(node);
-			;// we need to fix the size but it will not be height modifier so no addition
+			// we need to fix the size but it will not be height modifier so no addition
 				// to count_mod
 			node = node.getParent();
 		}
@@ -760,6 +787,7 @@ public class AVLTree {
 	 */
 	private boolean right_rotation(IAVLNode parent, IAVLNode child) {
 		if (!((parent.getLeft() == child) && (child.getParent() == parent)) || (parent == null) || child == null) {
+			assert(false);
 			return false;
 		}
 
@@ -799,7 +827,8 @@ public class AVLTree {
 	 * failure, otherwise, returns true. Time complexity: O(1)
 	 */
 	private boolean left_rotation(IAVLNode parent, IAVLNode child) {
-		if (!((parent.getRight() == child) && (child.getParent() == parent)) || (parent == null) || child == null) {
+		if (!((parent.getRight() == child) && (child.getParent() == parent)) || (parent == null) || (child == null)) {
+			assert(false);
 			return false;
 		}
 
@@ -844,10 +873,14 @@ public class AVLTree {
 		if (!success) {
 			return false;
 		}
+		AVLTree.hs_modifier(child);
+		AVLTree.hs_modifier(grand_child);
 		if (!right_rotation(parent, grand_child)) {
 			right_rotation(grand_child, child);
 			return false;
 		}
+		AVLTree.hs_modifier(grand_child);
+		AVLTree.hs_modifier(parent);
 
 		return true;
 	}
@@ -864,10 +897,14 @@ public class AVLTree {
 		if (!success) {
 			return false;
 		}
+		AVLTree.hs_modifier(child);
+		AVLTree.hs_modifier(grand_child);
 		if (!left_rotation(parent, grand_child)) {
 			left_rotation(grand_child, child);
 			return false;
 		}
+		AVLTree.hs_modifier(grand_child);
+		AVLTree.hs_modifier(parent);
 
 		return true;
 	}
@@ -884,7 +921,7 @@ public class AVLTree {
 			node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
 		}
 	}
-	//this is printer
+	// this is printer
 
 	public List<List<String>> printTree(IAVLNode root) {
 		int height = root.getHeight();
@@ -953,7 +990,7 @@ public class AVLTree {
 		}
 		return ret;
 	}
-	
+
 	public IAVLNode getMax() {
 		return this.max;
 	}

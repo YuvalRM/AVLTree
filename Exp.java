@@ -7,6 +7,9 @@ public class Exp {
 	public static void main(String[] args) {
 		int [] arr=buildRand(7);
 		System.out.println(Arrays.toString(arr));
+		Random rand=new Random();
+		int x=rand.nextInt(2);
+		System.out.println(x);
 	}
 	public static Pair<AVLTree.IAVLNode,Integer> search(AVLTree tree, int key){
 		int dist=0;
