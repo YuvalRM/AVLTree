@@ -5,22 +5,71 @@ import java.util.Random;
 
 public class Exp {
 	public static void main(String[] args) {
-		int [] arr=buildRand(7);
-		System.out.println(Arrays.toString(arr));
-		Random rand=new Random();
-		int x=rand.nextInt(2);
-		System.out.println(x);
+		int [][] rands=new int [5][];
+		int [][] rev=new int [5][];
+		int []randSw =new int [5];
+		int []revSw =new int [5];
+		for(int i=0;i<5;i++) {
+			rands[i]=buildRand((int) (1000*Math.pow(2, i+1)));
+			rev[i]=buildReverse((int) (1000*Math.pow(2, i+1)));
+			randSw[i]=checkSwaps(rands[i]);
+			revSw[i]=checkSwaps(rev[i]);
+		}
+		
+		AVLTree [][] trees= new AVLTree[2][5];
+		int [][] counts = new int[2][5];
+		
+		for(int i=0;i<5;i++) {
+			AVLTree tree = new AVLTree();
+			int count = 0;
+			for(int j=0; j<rands[i].length;j++) {
+				count += insert(tree,rands[i][j],null);
+			}
+			trees[0][i] = tree;
+			counts[0][i] = count;
+		}
+		
+		for(int i=0;i<5;i++) {
+			AVLTree tree = new AVLTree();
+			int count = 0;
+			for(int j=0; j<rev[i].length;j++) {
+				count += insert(tree,rev[i][j],null);
+			}
+			trees[1][i] = tree;
+			counts[1][i] = count;
+		}
+	    
+		for(int i=0;i<5;i++) {
+			System.out.println("Random tree " +String.valueOf(i));
+			System.out.println(counts[0][i]);
+			System.out.println("It's swaps are:");
+			System.out.println(randSw[i]);
+			
+		}
+		
+		
+		for(int i=0;i<5;i++) {
+			System.out.println("Reverse tree " +String.valueOf(i));
+			System.out.println(counts[1][i]);
+			System.out.println("It's swaps are:");
+			System.out.println(revSw[i]);
+		}
 	}
-	public static Pair<AVLTree.IAVLNode,Integer> search(AVLTree tree, int key){
+	public static int insert(AVLTree tree, int k, String val) {
+		int ret= search(tree,k);
+		tree.insert(k, val);
+		return ret;
+	}
+	public static int search(AVLTree tree, int key){
 		int dist=0;
 		AVLTree.IAVLNode node = tree.getMax();
-		while(node.getKey()>key&& node!=null) {
+		while(node!=null && node.getKey()>key) {
 			node=node.getParent();
 			dist++;
 		}
-		while(node.isRealNode()) {
+		while(node!=null && node.isRealNode()) {
 			if(node.getKey()==key) {
-				return new Pair<>(node,dist);
+				return dist;
 			}
 			if(node.getKey()<key) {
 				node=node.getRight();
@@ -30,7 +79,7 @@ public class Exp {
 			}
 			dist++;
 		}
-		return null;
+		return dist;
 	}
 	
 	public static int[] buildReverse(int k) {
@@ -52,5 +101,18 @@ public class Exp {
 			arr[i]=vals.remove(x);
 		}
 		return arr;
+	}
+	
+	public static int checkSwaps(int [] arr) {
+		int cnt =0;
+		int n= arr.length;
+		for(int i=0; i<n;i++) {
+			for (int j=i+1;j<n;j++){
+				if(arr[i]>arr[j]) {
+					cnt++;
+				}
+			}
+		}
+		return cnt;
 	}
 }

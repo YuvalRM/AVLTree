@@ -10,10 +10,10 @@ import java.util.List;
  */
 
 public class AVLTree {
-	private static final IAVLNode virtual_leaf = new AVLNode();
-	private IAVLNode root;
-	private IAVLNode min;
-	private IAVLNode max;
+	protected static final IAVLNode virtual_leaf = new AVLNode();
+	protected IAVLNode root;
+	protected IAVLNode min;
+	protected IAVLNode max;
 
 	/**
 	 * public AVLTree()
@@ -107,8 +107,9 @@ public class AVLTree {
 		} else if (k < this.min.getKey()) {
 			this.min = new_node;
 		}
-
-		return rebalance(node);
+		this.root.setParent(null);
+		int res= rebalance(node);
+		return res;
 	}
 
 	/**
@@ -194,6 +195,7 @@ public class AVLTree {
 
 			if (node_parent == null) {
 				this.root = successor;
+				
 
 			}
 
@@ -226,6 +228,7 @@ public class AVLTree {
 			}
 			child.setParent(parent);
 		}
+		this.root.setParent(null);
 
 		// fixing all the nodes up the tree just by current height and size
 		AVLTree.hs_modifier(parent);
@@ -418,7 +421,7 @@ public class AVLTree {
 	 * sorted array which contains all keys in the tree, or an empty array if the
 	 * tree is empty. Time complexity: O(n)
 	 */
-	private int keysToArrayHelp(int[] arr, IAVLNode node, int index) {
+	protected int keysToArrayHelp(int[] arr, IAVLNode node, int index) {
 		if (!node.isRealNode()) {
 			return index;
 		}
@@ -563,7 +566,7 @@ public class AVLTree {
 	 * Returns true if the input node is the right son of its parent, otherwise,
 	 * returns false Time complexity: O(1)
 	 */
-	private boolean update_side(IAVLNode node) {
+	protected boolean update_side(IAVLNode node) {
 		if (node.getParent() != null) {
 			return node == node.getParent().getRight();
 		}
@@ -576,7 +579,7 @@ public class AVLTree {
 	 * Disconnects the input node from its parent if exists (does not disconnect
 	 * from the right and left son) Time complexity: O(1)
 	 */
-	private void disconnect_from_parent(IAVLNode node) {
+	protected void disconnect_from_parent(IAVLNode node) {
 		IAVLNode parent = node.getParent();
 
 		if (node.getParent() != null) {
@@ -597,7 +600,7 @@ public class AVLTree {
 	 * Disconnects the input node from its parent and sons (if they exist) Time
 	 * complexity: O(1)
 	 */
-	private void complete_disconnect(IAVLNode node) {
+	protected void complete_disconnect(IAVLNode node) {
 		disconnect_from_parent(node);
 		node.setLeft(virtual_leaf);
 		node.setRight(virtual_leaf);
@@ -611,7 +614,7 @@ public class AVLTree {
 	 * Performs the "join" operation itself, as explained in the documentation of
 	 * the next function- join Time complexity: O(log(n))
 	 */
-	private int to_join(IAVLNode x, AVLTree t) {
+	protected int to_join(IAVLNode x, AVLTree t) {
 		if (this.empty() && t.empty()) {// if they are both empty x is alone;
 			this.root = x;
 			AVLTree.hs_modifier(x);
@@ -665,7 +668,7 @@ public class AVLTree {
 				return res;
 			}
 			this.root = nodeH;
-			IAVLNode parent=null;
+			IAVLNode parent = null;
 			while (nodeH.isRealNode() && nodeH.getHeight() > k) {
 				parent = nodeH;
 				nodeH = nodeH.getRight();
@@ -696,18 +699,23 @@ public class AVLTree {
 	 * empty (rank = -1). postcondition: none Time complexity: O(log(n))
 	 */
 	public int join(IAVLNode x, AVLTree t) {
+		x.setHeight(0);
+		x.setSize(1);
+		x.setLeft(virtual_leaf);
+		x.setRight(virtual_leaf);
+		x.setParent(null);
 		// we assume this is a valid tree
-		if (t.max == null && this.max == null) {
+		if (t.empty() && this.empty()) {
 			this.root = x;
 			this.max = x;
 			this.min = x;
-			return 0;
-		} else if (this.max == null) {
+			return 1;
+		} else if (this.empty()) {
 
 			this.max = t.max.getKey() > x.getKey() ? t.max : x;
 			this.min = t.min.getKey() < x.getKey() ? t.min : x;
 
-		} else if (t.max == null) {
+		} else if (t.empty()) {
 			this.max = this.max.getKey() > x.getKey() ? this.max : x;
 			this.min = this.min.getKey() < x.getKey() ? this.min : x;
 		} else {
@@ -724,7 +732,7 @@ public class AVLTree {
 	 * Performs the rebalance steps for the "join" and "insert" functions. Returns
 	 * the number of rebalance operations needed Time complexity: O(log(n))
 	 */
-	private int rebalance(IAVLNode node) {// the input node is the grandfather of the node we start to rebalance from
+	protected int rebalance(IAVLNode node) {// the input node is the grandfather of the node we start to rebalance from
 		int count_mod = 0;
 
 		while (node != null) {
@@ -747,8 +755,7 @@ public class AVLTree {
 						if (lh - left.getLeft().getHeight() == 1 && lh - left.getRight().getHeight() == 1) {
 							right_rotation(node, left);
 							count_mod += 2;
-						}
-						else if (lh - left.getLeft().getHeight() == 1) {
+						} else if (lh - left.getLeft().getHeight() == 1) {
 							right_rotation(node, left);
 							count_mod += 2;
 						} else {
@@ -759,8 +766,7 @@ public class AVLTree {
 						if (rh - right.getLeft().getHeight() == 1 && rh - right.getRight().getHeight() == 1) {
 							left_rotation(node, right);
 							count_mod += 2;
-						}
-						else if (rh - right.getRight().getHeight() == 1) {
+						} else if (rh - right.getRight().getHeight() == 1) {
 							left_rotation(node, right);
 							count_mod += 2;
 						} else {
@@ -773,7 +779,7 @@ public class AVLTree {
 			}
 			AVLTree.hs_modifier(node);
 			// we need to fix the size but it will not be height modifier so no addition
-				// to count_mod
+			// to count_mod
 			node = node.getParent();
 		}
 		return count_mod;
@@ -787,7 +793,7 @@ public class AVLTree {
 	 */
 	private boolean right_rotation(IAVLNode parent, IAVLNode child) {
 		if (!((parent.getLeft() == child) && (child.getParent() == parent)) || (parent == null) || child == null) {
-			assert(false);
+			assert (false);
 			return false;
 		}
 
@@ -828,7 +834,7 @@ public class AVLTree {
 	 */
 	private boolean left_rotation(IAVLNode parent, IAVLNode child) {
 		if (!((parent.getRight() == child) && (child.getParent() == parent)) || (parent == null) || (child == null)) {
-			assert(false);
+			assert (false);
 			return false;
 		}
 
@@ -868,7 +874,7 @@ public class AVLTree {
 	 * Performs the left_right rotation, as presented in class Returns false in case
 	 * of failure, otherwise, returns true. Time complexity: O(1)
 	 */
-	private boolean left_right_rotation(IAVLNode parent, IAVLNode child, IAVLNode grand_child) {
+	protected boolean left_right_rotation(IAVLNode parent, IAVLNode child, IAVLNode grand_child) {
 		boolean success = left_rotation(child, grand_child);
 		if (!success) {
 			return false;
@@ -892,7 +898,7 @@ public class AVLTree {
 	 * Performs the right_left rotation, as presented in class Returns false in case
 	 * of failure, otherwise, returns true. Time complexity: O(1)
 	 */
-	private boolean right_left_rotation(IAVLNode parent, IAVLNode child, IAVLNode grand_child) {
+	protected boolean right_left_rotation(IAVLNode parent, IAVLNode child, IAVLNode grand_child) {
 		boolean success = right_rotation(child, grand_child);
 		if (!success) {
 			return false;
@@ -941,7 +947,8 @@ public class AVLTree {
 		return result;
 	}
 
-	private void printTreeHelper(IAVLNode root, int rowIndex, int columnIndex, int height, List<List<String>> matrix) {
+	protected void printTreeHelper(IAVLNode root, int rowIndex, int columnIndex, int height,
+			List<List<String>> matrix) {
 		if (!root.isRealNode()) {
 			return;
 		}
@@ -957,7 +964,7 @@ public class AVLTree {
 		printTreeHelper(root.getRight(), rowIndex + 1, rightChildColumnIndex, height, matrix);
 	}
 
-	private void fillHolesWithEmpty(List<String> list, int targetSize) {
+	protected void fillHolesWithEmpty(List<String> list, int targetSize) {
 		while (list.size() < targetSize) {
 			list.add("");
 		}
