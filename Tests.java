@@ -127,16 +127,17 @@ public class Tests {
 		 * System.out.println(Arrays.toString(trees2[0].keysToArray()));
 		 * assertValidAVLTree(trees2[0]);
 		 */
-		/*AVLTree t = new AVLTree();
-		t.insert(2, "2");*/
-		//assertValidAVLTree(t);
-		//t.insert(0, "0");
-		//assertValidAVLTree(t);
-		//t.delete(2);
-		//assertValidAVLTree(t);
-		//assertNull(t.search(2));
-		//t.insert(2, "2");
-		//assertValidAVLTree(t);
+		/*
+		 * AVLTree t = new AVLTree(); t.insert(2, "2");
+		 */
+		// assertValidAVLTree(t);
+		// t.insert(0, "0");
+		// assertValidAVLTree(t);
+		// t.delete(2);
+		// assertValidAVLTree(t);
+		// assertNull(t.search(2));
+		// t.insert(2, "2");
+		// assertValidAVLTree(t);
 		stressTest();
 
 	}
@@ -155,7 +156,7 @@ public class Tests {
 
 		/* Assert sorted */
 		for (int i = 1; i < keys.length; ++i) {
-			if(!(keys[i - 1] < keys[i])) {
+			if (!(keys[i - 1] < keys[i])) {
 				System.out.println(Arrays.toString(keys));
 				System.out.println((keys[i - 1]));
 				System.out.println((keys[i]));
@@ -164,8 +165,9 @@ public class Tests {
 		}
 
 		if (!empty) {
-			if(!min.equals(values[0])||(!max.equals(values[values.length-1]))) {
-				System.out.println(Arrays.toString(keys));}
+			if (!min.equals(values[0]) || (!max.equals(values[values.length - 1]))) {
+				System.out.println(Arrays.toString(keys));
+			}
 			assertEquals(min, values[0]);
 			assertEquals(max, values[values.length - 1]);
 		}
@@ -261,7 +263,16 @@ public class Tests {
 
 				for (int i = 0; i < 10000; i++) {
 					boolean insertOrDel = rand.nextBoolean();
-					int val = rand.nextInt(1000);
+					int val=0;
+					if(tree.empty()) {
+						val = rand.nextInt(1000);
+					}
+					else {
+						int max = tree.keysToArray()[tree.size() - 1];
+						int min= tree.keysToArray()[0];
+						val= min/2 +rand.nextInt(max);
+						
+					}
 					if (insertOrDel) {
 						tree.insert(val, String.valueOf(val));
 					} else {
@@ -272,14 +283,14 @@ public class Tests {
 				assertValidAVLTree(tree);
 				int howMany = rand.nextInt(15);
 				for (int i = 0; i < howMany; i++) {
-					System.out.println("New iteration");
+					// System.out.println("New iteration");
 					tree2 = new AVLTree();
-					boolean join = true;
+					boolean join = rand.nextBoolean();
 					if (join) {
 						boolean larger = rand.nextBoolean();
 						if (larger) {
 							int max = 0;
-							if (!(tree.max() == null)) {
+							if (!tree.empty()) {
 								max = tree.keysToArray()[tree.size() - 1];
 							}
 							if (max > 100000) {
@@ -309,9 +320,8 @@ public class Tests {
 								if (min <= 1) {
 									continue;// not interesting the smaller tree cannot hold keys smaller then 0;
 								}
-							}
-							else {
-								min=10;
+							} else {
+								min = 10;
 							}
 							AVLTree connectTree = new AVLTree();
 							connectTree.insert(min - 1, String.valueOf(min - 1));
@@ -319,13 +329,13 @@ public class Tests {
 							for (int j = 0; j < 10000; j++) {
 								boolean insertOrDel = rand.nextBoolean();
 								int val = rand.nextInt(min - 1);
-								assert(val<min-1);
+								assert (val < min - 1);
 								if (insertOrDel) {
-									System.out.println("Inserted " + val);
+									// System.out.println("Inserted " + val);
 									tree2.insert(val, String.valueOf(val));
 									assertValidAVLTree(tree2);
 								} else {
-									System.out.println("Deleted " + val);
+									// System.out.println("Deleted " + val);
 									tree2.delete(val);
 									assertValidAVLTree(tree2);
 								}
@@ -338,6 +348,9 @@ public class Tests {
 					} else {
 
 						int[] keys = tree.keysToArray();
+						if(keys.length==0) {
+							continue;
+						}
 						int splitKey = rand.nextInt(keys.length);
 						int theKey = keys[splitKey];
 						AVLTree[] trees = tree.split(theKey);
@@ -350,6 +363,26 @@ public class Tests {
 							tree = trees[0];
 						}
 					}
+					int x= rand.nextInt(5);
+					for (int j = 0; j < x; j++) {
+						boolean insertOrDel = rand.nextBoolean();
+						int val=0;
+						if(tree.empty()) {
+							val = rand.nextInt(1000);
+						}
+						else {
+							int max = tree.keysToArray()[tree.size() - 1];
+							int min= tree.keysToArray()[0];
+							val= min/2 +rand.nextInt(max);
+							
+						}
+						if (insertOrDel) {
+							tree.insert(val, String.valueOf(val));
+						} else {
+							tree.delete(val);
+						}
+
+					}
 				}
 			} catch (Exception e) {
 				System.out.println("error occured");
@@ -358,11 +391,12 @@ public class Tests {
 				System.out.println("resetting");
 				tree = new AVLTree();
 
-			} /*catch (AssertionError e) {
-				System.out.println(e.toString());
-				System.out.println("resetting");
-				tree = new AVLTree();
-			}*/
+			} /*
+				 * catch (AssertionError e) { System.out.println(e.toString());
+				 * System.out.println("resetting"); tree = new AVLTree(); }
+				 */
+			System.out.println("Next iteration");
 		}
+		
 	}
 }

@@ -123,6 +123,9 @@ public class AVLTreeTest {
         String[] values = tree.infoToArray();
 
         assertTrue(keys.length == values.length);
+        if(size >= 2 && keys[size - 1] == 0) {
+        	int wow=0;
+        }
         assertFalse(size >= 2 && keys[size - 1] == 0);
 
         if (!empty) {

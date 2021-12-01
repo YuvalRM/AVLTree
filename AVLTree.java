@@ -108,7 +108,7 @@ public class AVLTree {
 			this.min = new_node;
 		}
 		this.root.setParent(null);
-		int res= rebalance(node);
+		int res = rebalance(node);
 		return res;
 	}
 
@@ -195,7 +195,6 @@ public class AVLTree {
 
 			if (node_parent == null) {
 				this.root = successor;
-				
 
 			}
 
@@ -617,7 +616,11 @@ public class AVLTree {
 	protected int to_join(IAVLNode x, AVLTree t) {
 		if (this.empty() && t.empty()) {// if they are both empty x is alone;
 			this.root = x;
-			AVLTree.hs_modifier(x);
+			x.setParent(null);
+			x.setHeight(0);
+			x.setSize(1);
+			x.setLeft(virtual_leaf);
+			x.setRight(virtual_leaf);
 			return 0;
 		}
 		// k == the smaller tree's rank
