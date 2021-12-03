@@ -143,7 +143,7 @@ public class Tests {
 		// assertValidAVLTree(t);
 		repeatingInsDel();
 		System.out.println("done");
-		//stressTest();
+		stressTest();
 
 	}
 
@@ -263,9 +263,12 @@ public class Tests {
 		Random rand = new Random();
 		AVLTree tree = new AVLTree();
 		AVLTree tree2 = new AVLTree();
+		int cnt=1;
 		while (true) {
+			if(cnt%10==0) {
+				System.out.println("iter"+ String.valueOf(cnt));
+			}
 			try {
-
 				for (int i = 0; i < 10000; i++) {
 					boolean insertOrDel = rand.nextBoolean();
 					int val=0;
@@ -400,7 +403,7 @@ public class Tests {
 				 * catch (AssertionError e) { System.out.println(e.toString());
 				 * System.out.println("resetting"); tree = new AVLTree(); }
 				 */
-			System.out.println("Next iteration");
+			cnt++;
 		}
 		
 		
