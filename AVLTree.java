@@ -579,6 +579,9 @@ public class AVLTree {
 	 * from the right and left son) Time complexity: O(1)
 	 */
 	protected void disconnect_from_parent(IAVLNode node) {
+		if(!node.isRealNode()) {
+			return;
+		}
 		IAVLNode parent = node.getParent();
 
 		if (node.getParent() != null) {
@@ -614,13 +617,14 @@ public class AVLTree {
 	 * the next function- join Time complexity: O(log(n))
 	 */
 	protected int to_join(IAVLNode x, AVLTree t) {
+		x.setParent(null);
+		x.setHeight(0);
+		x.setSize(1);
+		x.setLeft(virtual_leaf);
+		x.setRight(virtual_leaf);
 		if (this.empty() && t.empty()) {// if they are both empty x is alone;
 			this.root = x;
-			x.setParent(null);
-			x.setHeight(0);
-			x.setSize(1);
-			x.setLeft(virtual_leaf);
-			x.setRight(virtual_leaf);
+			
 			return 0;
 		}
 		// k == the smaller tree's rank
@@ -689,6 +693,7 @@ public class AVLTree {
 		assert (x.getHeight() == k + 1);
 
 		this.rebalance(x);
+
 		return res;
 	}
 

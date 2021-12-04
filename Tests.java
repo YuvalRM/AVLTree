@@ -16,6 +16,8 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import AVLTreeTest.Pair;
+
 public class Tests {
 
 	private static final String tooLargeMassage = "Too Big";
@@ -144,120 +146,127 @@ public class Tests {
 		repeatingInsDel();
 		System.out.println("done");
 		stressTest();
-
 	}
+    public static int getHeight(AVLTree tree) {
+        return tree.getRoot() == null ? -1 : tree.getRoot().getHeight();
+    }
 
 	public static void assertValidAVLTree(AVLTree tree) {
-		int size = tree.size();
-		int height = tree.getRoot() == null ? -1 : tree.getRoot().getHeight();
-		String min = tree.min();
-		String max = tree.max();
-		boolean empty = tree.empty();
+        int size = tree.size();
+        int height = getHeight(tree);
+        String min = tree.min();
+        String max = tree.max();
+        boolean empty = tree.empty();
 
-		int[] keys = tree.keysToArray();
-		String[] values = tree.infoToArray();
+        int[] keys = tree.keysToArray();
+        String[] values = tree.infoToArray();
 
-		assertTrue(keys.length == values.length);
+        assertTrue(keys.length == values.length);
+        if(size >= 2 && keys[size - 1] == 0) {
+        	int wow=0;
+        }
+        assertFalse(size >= 2 && keys[size - 1] == 0);
 
-		/* Assert sorted */
-		for (int i = 1; i < keys.length; ++i) {
-			if (!(keys[i - 1] < keys[i])) {
-				System.out.println(Arrays.toString(keys));
-				System.out.println((keys[i - 1]));
-				System.out.println((keys[i]));
-			}
-			assertTrue(keys[i - 1] < keys[i]);
-		}
+        if (!empty) {
+            assertEquals(min, values[0]);
+            assertEquals(max, values[values.length - 1]);
+        }
 
-		if (!empty) {
-			if (!min.equals(values[0]) || (!max.equals(values[values.length - 1]))) {
-				System.out.println(Arrays.toString(keys));
-			}
-			assertEquals(min, values[0]);
-			assertEquals(max, values[values.length - 1]);
-		}
+        /* Assert sorted */
+        for (int i = 1; i < keys.length; ++i) {
+            assertTrue(keys[i - 1] < keys[i]);
+        }
 
-		/* <Key : Pair(Value, isChecked)> dictionary */
-		Map<Integer, Pair<String, Boolean>> data = IntStream.range(0, keys.length).boxed()
-				.collect(Collectors.toMap(i -> keys[i], i -> new Pair<String, Boolean>(values[i], false)));
+        /* <Key : Pair(Value, isChecked)> dictionary */
+        Map<Integer, Pair<String, Boolean>> data = IntStream.range(0, keys.length).boxed()
+            .collect(Collectors.toMap(i -> keys[i], i -> new Pair<String, Boolean>(values[i], false)));
+        AVLTree.IAVLNode node = tree.getRoot();
 
-		AVLTree.IAVLNode node = tree.getRoot();
+        assertSame(node == null, empty);
+        if (node == null) {
+            // Empty tree
+            assertSame(-1, height);
+            assertSame(0, size);
+            assertSame(0, keys.length);
+            assertSame(0, values.length);
+            assertNull(max);
+            assertNull(min);
+            return;
+        }
 
-		assertSame(node == null, empty);
-		if (node == null) {
-			// Empty tree
-			assertSame(-1, height);
-			assertSame(0, size);
-			assertSame(0, keys.length);
-			assertSame(0, values.length);
-			assertNull(max);
-			assertNull(min);
-			return;
-		}
+        assertSame(height, node.getHeight());
+        assertNotNull(min);
+        assertNotNull(max);
 
-		assertSame(height, node.getHeight());
+        Queue<AVLTree.IAVLNode> bfs = new LinkedList<>();
+        bfs.add(node);
 
-		Queue<AVLTree.IAVLNode> bfs = new LinkedList<>();
-		bfs.add(node);
+        int count = assertValidAVLTreeTraverse(bfs, height, data);
 
-		int count = 0;
+        // Assert size() returns the actual amount of nodes in the tree
+        assertEquals(size, count);
 
-		// Traverse the entire tree using BFS, verify the validity of each node
-		// encountered
-		while (!bfs.isEmpty()) {
-			node = bfs.remove();
-			assertNotSame(null, node);
+        // Assert every key actually exists in the tree
+        data.forEach((key, pair) -> assertTrue(pair.b,
+            String.format("Node with the following key is missing: %d", key)));
+    }
+	protected static int assertValidAVLTreeTraverse(Queue<AVLTree.IAVLNode> bfs, int height, Map<Integer, Pair<String, Boolean>> data) {
+        int count = 0;
+        
+        AVLTree.IAVLNode node = null;
+        // Traverse the entire tree using BFS, verify the validity of each node encountered
+        while(!bfs.isEmpty()) {
+            node = bfs.remove();
+            assertNotSame(null, node);
 
-			if (!node.isRealNode()) {
-				// Verify properties of virtual node
-				assertSame(-1, node.getKey());
-				assertNull(node.getValue());
-				assertSame(0, node.getSize());
-				assertSame(-1, node.getHeight());
-				continue;
-			}
+            if (!node.isRealNode()) {
+                // Verify properties of virtual node
+                assertSame(-1, node.getKey());
+                assertNull(node.getValue());
+                assertSame(0, node.getSize());
+                assertSame(-1, node.getHeight());
+                continue;
+            }
 
-			count++;
-			bfs.add(node.getLeft());
-			bfs.add(node.getRight());
+            count++;
+            bfs.add(node.getLeft());
+            bfs.add(node.getRight());
 
-			/* Verify current node */
+            /* Verify current node */
 
-			// Heights
-			int cHeight = node.getHeight();
-			assertTrue(cHeight >= 0);
-			assertTrue(cHeight <= height);
+            // Heights
+            int cHeight = node.getHeight();
+            assertTrue(cHeight >= 0);
+            assertTrue(cHeight <= height);
 
-			// Connectivity of left/right child
-			if (node.getLeft().isRealNode()) {
-				assertSame(node, node.getLeft().getParent());
-			}
-			if (node.getRight().isRealNode()) {
-				assertSame(node, node.getRight().getParent());
-			}
+            // Connectivity of left/right child
+            if (node.getLeft().isRealNode()) {
+                assertSame(node, node.getLeft().getParent());
+            }
+            if (node.getRight().isRealNode()) {
+                assertSame(node, node.getRight().getParent());
+            }
 
-			// Heights diff
-			int lDiff = cHeight - node.getLeft().getHeight();
-			int rDiff = cHeight - node.getRight().getHeight();
-			assertTrue((lDiff == 1 && rDiff == 1) || (lDiff == 2 && rDiff == 1) || (lDiff == 1 && rDiff == 2),
-					String.format("Found a %d,%d node", lDiff, rDiff));
+            // Heights diff
+            int lDiff = cHeight - node.getLeft().getHeight();
+            int rDiff = cHeight - node.getRight().getHeight();
+            assertTrue((lDiff == 1 && rDiff == 1) 
+                || (lDiff == 2 && rDiff == 1) 
+                || (lDiff == 1 && rDiff == 2),
+                String.format("Found a %d,%d node", lDiff, rDiff)
+            );
 
-			// Key and value
-			int key = node.getKey();
-			String value = node.getValue();
-			assertTrue(data.containsKey(key));
-			assertEquals(data.get(key).a, value);
-			assertFalse(data.get(key).b); // key is unique
-			data.get(key).b = true;
-		}
+            // Key and value
+            int key = node.getKey();
+            String value = node.getValue();
+            assertTrue(data.containsKey(key));
+            assertEquals(data.get(key).a, value);
+            assertFalse(data.get(key).b); // key is unique
+            data.get(key).b = true;
+        }
 
-		// Assert size() returns the actual amount of nodes in the tree
-		assertEquals(size, count);
-
-		// Assert every key actually exists in the key
-		data.forEach(
-				(key, pair) -> assertTrue(pair.b, String.format("Node with the following key is missing: %d", key)));
-	}
+        return count;
+    }
 
 	public static void stressTest() {
 		Random rand = new Random();
@@ -265,7 +274,7 @@ public class Tests {
 		AVLTree tree2 = new AVLTree();
 		int cnt=1;
 		while (true) {
-			if(cnt%10==0) {
+			if(cnt%10==0 || cnt<10) {
 				System.out.println("iter"+ String.valueOf(cnt));
 			}
 			try {
