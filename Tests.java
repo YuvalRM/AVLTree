@@ -1,4 +1,5 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -16,7 +17,6 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import AVLTreeTest.Pair;
 
 public class Tests {
 
@@ -295,9 +295,10 @@ public class Tests {
 					} else {
 						tree.delete(val);
 					}
+					assertValidAVLTree(tree);
 
 				}
-				assertValidAVLTree(tree);
+				
 				int howMany = rand.nextInt(15);
 				for (int i = 0; i < howMany; i++) {
 					// System.out.println("New iteration");

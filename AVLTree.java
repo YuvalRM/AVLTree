@@ -579,7 +579,7 @@ public class AVLTree {
 	 * from the right and left son) Time complexity: O(1)
 	 */
 	protected void disconnect_from_parent(IAVLNode node) {
-		if(!node.isRealNode()) {
+		if (!node.isRealNode()) {
 			return;
 		}
 		IAVLNode parent = node.getParent();
@@ -624,7 +624,7 @@ public class AVLTree {
 		x.setRight(virtual_leaf);
 		if (this.empty() && t.empty()) {// if they are both empty x is alone;
 			this.root = x;
-			
+
 			return 0;
 		}
 		// k == the smaller tree's rank
@@ -695,6 +695,94 @@ public class AVLTree {
 		this.rebalance(x);
 
 		return res;
+	}
+
+	public double[] split2(int x) {
+		AVLTree[] res = new AVLTree[3];
+		AVLTree smaller = new AVLTree();
+		AVLTree bigger = new AVLTree();
+		IAVLNode child = goTo(x);
+		int cnt = 0;
+		int max = 0;
+		int how = 0;
+
+		IAVLNode successor = successor(child);
+		IAVLNode predecessor = predecessor(child);
+		IAVLNode node = child.getParent();
+		boolean right = false;
+		if (node != null) {
+			right = child == node.getRight();
+		}
+
+		if (child.getLeft().isRealNode()) {
+			child.getLeft().setParent(null);
+			smaller.root = child.getLeft();
+		}
+
+		if (child.getRight().isRealNode()) {
+			child.getRight().setParent(null);
+			bigger.root = child.getRight();
+		}
+
+		complete_disconnect(child);
+
+		while (node != null) {
+			IAVLNode temp_node = node.getParent();
+
+			if (right) {
+				right = update_side(node);
+				IAVLNode left_son = node.getLeft();
+				disconnect_from_parent(left_son);
+				AVLTree temp_tree = new AVLTree();
+				temp_tree.root = left_son;
+				complete_disconnect(node);
+				int y = smaller.to_join(node, temp_tree);
+				how++;
+				cnt += y;
+				if (y > max) {
+					max = y;
+				}
+			}
+
+			else {// child == parent.getLeft()
+				right = update_side(node);
+				IAVLNode right_son = node.getRight();
+				disconnect_from_parent(right_son);
+				AVLTree temp_tree = new AVLTree();
+				temp_tree.root = right_son;
+				complete_disconnect(node);
+				int y = bigger.to_join(node, temp_tree);
+				how++;
+				cnt += y;
+				if (y > max) {
+					max = y;
+				}
+			}
+
+			node = temp_node;
+		}
+
+		if (!smaller.empty()) {
+			smaller.min = this.min;
+			smaller.max = predecessor;
+		}
+
+		if (!bigger.empty()) {
+			bigger.max = this.max;
+			bigger.min = successor;
+		}
+
+		res[0] = smaller;
+		res[1] = bigger;
+
+		double[] ret = new double[3];
+		if (how != 0) {
+			ret[0] = cnt;
+			ret[1] = max;
+			ret[2] = (double) cnt / (double) how;
+		}
+		return ret;
+
 	}
 
 	/**
