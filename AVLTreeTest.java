@@ -664,6 +664,7 @@ public class AVLTreeTest {
     }
 
     AVLTree stressTestSplit(AVLTree tree) {
+    	assertValidAVLTree(tree);
         int[] keys = tree.keysToArray();
         int splitKey = rand.nextInt(keys.length);
         int theKey=keys[splitKey];
