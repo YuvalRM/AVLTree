@@ -443,7 +443,7 @@ public class Tests {
 		
 		for(int val : vals) {
 			assert(val>=0);
-			for(int j=0;j<7;j++) {
+			for(int j=0;j<11;j++) {
 				if(j%2==0) {
 					tree.insert(val, String.valueOf(val));
 				}

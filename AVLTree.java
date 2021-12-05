@@ -109,6 +109,7 @@ public class AVLTree {
 		}
 		this.root.setParent(null);
 		int res = rebalance(node);
+		this.root.setParent(null);
 		return res;
 	}
 
@@ -195,10 +196,7 @@ public class AVLTree {
 
 			if (node_parent == null) {
 				this.root = successor;
-
-			}
-
-			else {
+			} else {
 				if (node_parent.getRight() == node) {
 					node_parent.setRight(successor);
 				} else {
@@ -217,7 +215,7 @@ public class AVLTree {
 
 		if (parent == null) {
 			this.root = child;
-			return 1;
+			return 0;
 		}
 		if (flag) {
 			if (parent.getRight() == node) {
@@ -230,7 +228,11 @@ public class AVLTree {
 		this.root.setParent(null);
 
 		// fixing all the nodes up the tree just by current height and size
+		int h = parent.getHeight();
 		AVLTree.hs_modifier(parent);
+		if (h != parent.getHeight()) {
+			count_mod += 1;
+		}
 		node = parent;
 
 		while (node != null) {// fix the rank and height of the ancestors
@@ -262,7 +264,7 @@ public class AVLTree {
 							left_rotation(node, right);
 							AVLTree.hs_modifier(node);
 							AVLTree.hs_modifier(right);
-							count_mod += 3;
+							count_mod += 2;
 						} else {
 							assert (rh - rrh == 2 && rh - lrh == 1);// case 4
 							IAVLNode rightL = right.getLeft();
@@ -270,7 +272,7 @@ public class AVLTree {
 							AVLTree.hs_modifier(node);
 							AVLTree.hs_modifier(right);
 							AVLTree.hs_modifier(rightL);
-							count_mod += 6;
+							count_mod += 5;
 
 						}
 					} else if (nh - rh == 3) {// the problem is in the left subtree
@@ -286,7 +288,7 @@ public class AVLTree {
 							right_rotation(node, left);
 							AVLTree.hs_modifier(node);
 							AVLTree.hs_modifier(left);
-							count_mod += 3;
+							count_mod += 2;
 						} else {
 							assert (lh - rlh == 1 && lh - llh == 2);
 							IAVLNode leftR = left.getRight();
@@ -294,18 +296,18 @@ public class AVLTree {
 							AVLTree.hs_modifier(node);
 							AVLTree.hs_modifier(left);
 							AVLTree.hs_modifier(leftR);
-							count_mod += 6;
+							count_mod += 5;
 
 						}
 					}
 				}
 			}
-
+			
 			AVLTree.hs_modifier(node);// we need to fix the size but it will not be height modifier so no addition
 			// to count_mod
 			node = node.getParent();
 		}
-
+		this.root.setParent(null);
 		return count_mod;
 	}
 
