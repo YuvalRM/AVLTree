@@ -87,16 +87,16 @@ public class Exp {
 			assert(trees[1][i].size()==(1000 * Math.pow(2, i + 1)));
 			int val=rand.nextInt((int) (1000 * Math.pow(2, i + 1)));
 			int pred=trees[0][i].getRoot().getKey()-1;
-			double [] random =trees[0][i].split2(val);
-			double [] predo =trees[1][i].split2(pred);
 			
 			System.out.println("the random ");
 			System.out.println("the max");
+			boolean[] random = new boolean[0];
 			System.out.println(random[1]);
 			System.out.println("the mean");
 			System.out.println(random[2]);
 			System.out.println("the min max ");
 			System.out.println("the max");
+			boolean[] predo = new boolean[0];
 			System.out.println(predo[1]);
 			System.out.println("the mean");
 			System.out.println(predo[2]);
